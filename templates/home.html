@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .calculator-buttons button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Simple Calculator</h2>
+        <input type="text" id="display" readonly />
+        <div class="calculator-buttons">
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('+')">+</button>
+            <br>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('-')">-</button>
+            <br>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('*')">*</button>
+            <br>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="appendToDisplay('/')">/</button>
+        </div>
+        <button onclick="calculate()">Submit</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function appendToDisplay(value) {
+            var display = document.getElementById('display');
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            var display = document.getElementById('display');
+            display.value = '';
+            document.getElementById('result').innerText = '';
+        }
+
+        function calculate() {
+            var display = document.getElementById('display');
+            var expression = display.value;
+            $.ajax({
+                url: '/calculate',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ expression: expression }),
+                success: function(response) {
+                    document.getElementById('result').innerText = 'Result: ' + response.result;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

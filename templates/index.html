@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h2>To-Do List</h2>
+    <input type="text" id="newTask" placeholder="Add a new task" />
+    <button onclick="addTask()">Add Task</button>
+    <br><br>
+    <ul id="taskList">
+        {% for task in tasks %}
+        <li>
+            <input type="text" value="{{ task }}" onblur="updateTask({{ loop.index0 }})" />
+            <button onclick="deleteTask({{ loop.index0 }})">Delete</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function addTask() {
+            var newTask = $('#newTask').val();
+            $.post('/add_task', {task: newTask}, function(data) {
+                updateTaskList(data.tasks);
+            });
+        }
+
+        function updateTask(index) {
+            var task = $('#taskList li').eq(index).find('input').val();
+            $.post('/update_task/' + index, {task: task}, function(data) {
+                updateTaskList(data.tasks);
+            });
+        }
+
+        function deleteTask(index) {
+            $.post('/delete_task/' + index, function(data) {
+                updateTaskList(data.tasks);
+            });
+        }
+
+        function updateTaskList(tasks) {
+            var taskList = $('#taskList');
+            taskList.empty();
+            $.each(tasks, function(index, task) {
+                taskList.append(
+                    '<li>' +
+                    '<input type="text" value="' + task + '" onblur="updateTask(' + index + ')" />' +
+                    '<button onclick="deleteTask(' + index + ')">Delete</button>' +
+                    '</li>'
+                );
+            });
+        }
+    </script>
+</body>
+</html>
